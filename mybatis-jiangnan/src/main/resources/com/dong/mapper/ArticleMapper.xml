@@ -1,0 +1,54 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dong.mapper.ArticleMapper">
+    
+    <select id="getArticleById" resultType="com.dong.model.Article">
+        select a.*,u.id as "author.id",u.name as "author.name",u.age as "author.age"
+        from article a,author u
+        where a.aid=u.id and a.id=#{id}
+    </select>
+
+    <resultMap id="ArticleMap" type="com.dong.model.Article">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="author.id" column="author_id"/>
+        <result property="author.name" column="author_name"/>
+        <result property="author.age" column="author_age"/>
+    </resultMap>
+    <select id="getArticleById2" resultMap="ArticleMap">
+        select a.*,u.id as author_id,u.name as author_name,u.age as author_age
+        from article a,author u
+        where a.aid=u.id and a.id=#{id}
+    </select>
+
+    <resultMap id="getArticleById3ResultMap" type="com.dong.model.Article">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <association property="author" javaType="com.dong.model.Author" columnPrefix="author_" resultMap="com.dong.mapper.AuthorMapper.AuthorMap">
+<!--            <id property="id" column="id"/>-->
+<!--            <result property="name" column="name"/>-->
+<!--            <result property="age" column="age"/>-->
+        </association>
+    </resultMap>
+    <select id="getArticleById3" resultMap="getArticleById3ResultMap">
+        select a.*,u.id as author_id,u.name as author_name,u.age as author_age
+        from article a,author u
+        where a.aid=u.id and a.id=#{id}
+    </select>
+
+    <resultMap id="BaseArticleMap" type="com.dong.model.Article">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+    </resultMap>
+
+    <resultMap id="ArticleMap4" type="com.dong.model.Article" extends="BaseArticleMap">
+        <association property="author" javaType="com.dong.model.Author" select="com.dong.mapper.AuthorMapper.getAuthorById" column="{id=aid}" fetchType="lazy"></association>
+    </resultMap>
+    <select id="getArticleById4" resultMap="ArticleMap4">
+        select * from article where id=#{id};
+    </select>
+</mapper>

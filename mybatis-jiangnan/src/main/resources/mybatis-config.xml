@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+<!--    <settings>-->
+<!--        <setting name="cacheEnabled" value="true"/>-->
+<!--    </settings>-->
+    <plugins>
+        <plugin interceptor="com.dong.plugin.CamelInterceptor"></plugin>
+        <plugin interceptor="com.dong.plugin.PageInterceptor"></plugin>
+    </plugins>
+    <!-- 7、环境：配置mybatis的环境 -->
+    <environments default="development">
+        <!-- 环境变量：支持多套环境变量，例如开发环境、生产环境 -->
+        <environment id="development">
+            <!-- 事务管理器：默认JDBC -->
+            <transactionManager type="JDBC" />
+            <!-- 数据源：使用连接池，并加载mysql驱动连接数据库 -->
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.cj.jdbc.Driver" />
+                <property name="url" value="jdbc:mysql://localhost:3306/mybatis_test" />
+                <property name="username" value="dongliyang" />
+                <property name="password" value="dong$@@$51" />
+            </dataSource>
+        </environment>
+    </environments>
+
+    <mappers>
+        <package name="com.dong.mapper"/>
+    </mappers>
+</configuration>

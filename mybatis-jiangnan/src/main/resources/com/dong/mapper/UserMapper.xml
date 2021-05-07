@@ -1,0 +1,122 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dong.mapper.UserMapper">
+
+<!--    <cache type="org.mybatis.caches.redis.RedisCache"/>-->
+    <select id="getUserById" resultType="com.dong.model.User">
+        select * from user where id = #{id}
+    </select>
+
+    <select id="getAllUser" resultType="com.dong.model.User">
+        select * from user
+    </select>
+
+    <!-- （推荐）方式一：使用Mysql自动生成的数字序列回填id属性 -->
+    <insert id="addUser" parameterType="com.dong.model.User" useGeneratedKeys="true" keyProperty="id">
+    <!--使用mysql生成uuid作为主键-->
+<!--        <selectKey resultType="java.lang.String" keyProperty="id" order="BEFORE">-->
+<!--            select uuid();-->
+<!--        </selectKey>-->
+        insert into user (username,address) values(#{username},#{address})
+    </insert>
+
+<!--    <insert id="addUser" parameterType="com.dong.model.User">-->
+<!--        &lt;!&ndash;方式二：使用Mysql自动生成的数字序列回填id属性 &ndash;&gt;-->
+<!--        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">-->
+<!--            select last_insert_id();-->
+<!--        </selectKey>-->
+<!--        insert into user (username,address) values(#{username},#{address})-->
+<!--    </insert>-->
+    
+    <delete id="deleteUserById" parameterType="java.lang.Long">
+        delete from user where id = #{id}
+    </delete>
+
+    <update id="updateUserById" parameterType="com.dong.model.User">
+        update user set username = #{username},address = #{address} where id = #{id}
+    </update>
+
+    <select id="getUserOrderBy" resultType="com.dong.model.User" parameterType="java.lang.String">
+        select * from user order by ${orderby} desc
+    </select>
+
+<!--    <select id="getUserNameContains" resultType="com.dong.model.User" parameterType="java.lang.String">-->
+<!--        select * from user where username like '%${name}%'-->
+<!--    </select>-->
+
+    <!--使用mysql字符串连接函数concat-->
+    <select id="getUserNameContains" resultType="com.dong.model.User" parameterType="java.lang.String">
+        select * from user where username like concat('%',#{name},'%')
+    </select>
+
+<!--    <update id="updateUsernameById">-->
+<!--        update user set username = #{arg0} where id = #{arg1}-->
+<!--    </update>-->
+
+<!--    <update id="updateUsernameById">-->
+<!--        update user set username = #{param1} where id = #{param2}-->
+<!--    </update>-->
+
+        <update id="updateUsernameById">
+            update user set username = #{username} where id = #{id}
+        </update>
+
+    <select id="getUserCount" resultType="java.lang.Long">
+        select count(1) from user
+    </select>
+
+    <resultMap id="baseUserMap" type="com.dong.model.User">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="address" column="address"/>
+        <result property="enabled" column="enabled"/>
+        <result property="favorites" column="favorites" typeHandler="com.dong.typehandler.List2VarcharHandler"/>
+    </resultMap>
+
+    <resultMap id="userMapWithRole" type="com.dong.model.User" extends="baseUserMap">
+        <!--一对多-->
+        <collection property="roles" ofType="com.dong.model.Role" columnPrefix="role_" resultMap="com.dong.mapper.RoleMapper.baseRoleMap"/>
+    </resultMap>
+
+    <select id="getAllUsersWithRole" resultMap="userMapWithRole">
+        select u.*,r.id as role_id,r.name as role_name
+        from user u
+        left join user_role ur on u.id = ur.uid
+        left join role r on ur.rid = r.id
+    </select>
+
+    <resultMap id="userMapWithRole2" type="com.dong.model.User" extends="baseUserMap">
+        <!--一对多-->
+        <!--懒加载-->
+        <collection property="roles" ofType="com.dong.model.Role" columnPrefix="role_" select="com.dong.mapper.RoleMapper.getRolesByUid" column="{uid=id}" fetchType="lazy"/>
+    </resultMap>
+
+    <select id="getAllUsersWithRole2" resultMap="userMapWithRole2">
+        <!--懒加载-->
+        select * from user;
+    </select>
+
+    <resultMap id="userMapWithRole3" type="com.dong.model.User">
+        <!--鉴别映射器-->
+        <discriminator javaType="int" column="enabled">
+            <case value="1" resultMap="userMapWithRole"></case>
+            <case value="0" resultMap="baseUserMap"></case>
+        </discriminator>
+    </resultMap>
+    <select id="getAllUsersWithRole3" resultMap="userMapWithRole3">
+        select u.*,r.id as role_id,r.name as role_name
+        from user u
+        left join user_role ur on u.id = ur.uid
+        left join role r on ur.rid = r.id
+    </select>
+
+
+    <insert id="addUser3" parameterType="com.dong.model.User" useGeneratedKeys="true" keyProperty="id">
+        insert into user (username,address,enabled,favorites) values(#{username},#{address},#{enabled},#{favorites,typeHandler=com.dong.typehandler.List2VarcharHandler})
+    </insert>
+
+    <select id="getAllUserByPage" resultMap="baseUserMap">
+        select * from user
+    </select>
+</mapper>

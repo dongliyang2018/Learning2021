@@ -1,0 +1,96 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dong.mapper.BookMapper">
+    
+    <resultMap id="bookMap" type="com.dong.model.Book">
+        <id property="id" column="id"/>
+        <result property="name" column="book_name" />
+        <result property="vendor" column="vendor"/>
+    </resultMap>
+
+    <select id="getAllBooks" resultMap="bookMap">
+        select * from book
+    </select>
+
+    <select id="allBooks" resultType="java.util.HashMap">
+        select * from book
+    </select>
+    
+    <select id="getBooksByPage" resultMap="bookMap">
+        select * from book
+        <if test="start !=null and size !=null">
+            limit #{start},#{size}
+        </if>
+    </select>
+
+    <select id="getBookByNameOrAuthor" resultMap="bookMap">
+        select * from book
+        <where>
+            <choose>
+                <when test="name!=null and name!=''">
+                    and book_name=#{name}
+                </when>
+                <when test="vendor!=null and vendor!=''">
+                    and vendor=#{vendor}
+                </when>
+            </choose>
+        </where>
+    </select>
+
+    <select id="getBookByNameOrAuthor2" resultMap="bookMap">
+        select * from book
+        <trim prefix="where" prefixOverrides="and ">
+            <choose>
+                <when test="name!=null and name!=''">
+                    and book_name=#{name}
+                </when>
+                <when test="vendor!=null and vendor!=''">
+                    and vendor=#{vendor}
+                </when>
+            </choose>
+        </trim>
+    </select>
+
+    <update id="updateBook" parameterType="com.dong.model.Book">
+        update book
+        <set>
+            <if test="name!=null and name!=''">
+                book_name = #{name},
+            </if>
+            <if test="vendor!=null and vendor!=''">
+                vendor = #{vendor},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="getBooksByIds" resultMap="bookMap">
+        select * from book where id in
+        <foreach collection="ids" open="(" close=")" item="id" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+    <insert id="batchAddBook">
+        insert into book(book_name,vendor) values
+        <foreach collection="books" separator="," item="book">
+            (#{book.name},#{book.vendor})
+        </foreach>
+    </insert>
+
+    <update id="updateBook2">
+        update book
+        <set>
+            <foreach collection="book" index="key" item="val" separator=",">
+                ${key}=#{val}
+            </foreach>
+        </set>
+        where id = #{id}
+    </update>
+    
+    <select id="getBooksByVendor" resultMap="bookMap">
+        <bind name="vendorLike" value="vendor+'%'"/>
+        select * from book where vendor like #{vendorLike};
+    </select>
+</mapper>
