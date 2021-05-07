@@ -1,0 +1,205 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dong.mapper.EmployeeMapper">
+    <select id="getEmployeeById" resultType="Employee">
+        select * from tbl_employee where id=#{id}
+    </select>
+
+    <select id="getEmployeeByIdAndName" resultType="Employee">
+        select * from tbl_employee where id=#{id} and last_name=#{lastName}
+    </select>
+
+    <select id="getEmployeeByMap" resultType="Employee">
+         select * from tbl_employee where id=#{id} and last_name=#{lastName}
+    </select>
+
+    <select id="queryEmployeeByLastName" resultType="Employee">
+         select * from tbl_employee where last_name like #{lastName}
+    </select>
+
+    <!--返回类型为map-->
+    <select id="getEmployeeByIdReturnMap" resultType="map">
+         select * from tbl_employee where id=#{id}
+    </select>
+
+    <select id="queryEmployeeByLastNameReturnMap" resultType="Employee">
+         select * from tbl_employee where last_name like #{lastName}
+    </select>
+
+    <insert id="addEmp" useGeneratedKeys="true" keyProperty="id">
+        insert into tbl_employee (last_name,email,gender) values(#{lastName},#{email},#{gender})
+    </insert>
+
+    <update id="updateEmp">
+        update tbl_employee set last_name=#{lastName},email=#{email},gender=#{gender}
+        where id=#{id}
+    </update>
+    
+    <delete id="deleteEmpById">
+        delete from tbl_employee where id=#{id}
+    </delete>
+
+    <!-- 级联属性封装结果集-->
+    <resultMap id="employeeMap" type="Employee">
+        <id column="id" property="id"/>
+        <result column="last_name" property="lastName"/>
+        <result column="gender" property="gender"/>
+        <result column="email" property="email"/>
+        <result column="dept_id" property="dept.id"/>
+        <result column="dept_name" property="dept.departmentName"/>
+    </resultMap>
+
+    <!-- association关联单个对象的封装规则-->
+    <resultMap id="employeeMap2" type="com.dong.model.Employee">
+        <id column="id" property="id"/>
+        <result column="last_name" property="lastName"/>
+        <result column="gender" property="gender"/>
+        <result column="email" property="email"/>
+        <association property="dept" javaType="com.dong.model.Department">
+            <result column="dept_id" property="id"/>
+            <result column="dept_name" property="departmentName"/>
+        </association>
+    </resultMap>
+    <select id="getEmployeeByIdWithDept" resultMap="employeeMap2">
+        select  e.*,d.dept_name
+        from tbl_employee e
+        join tbl_dept d on e.dept_id = d.id
+        where e.id=#{id}
+    </select>
+
+
+
+    <resultMap id="employeeMap3" type="com.dong.model.Employee">
+        <id column="id" property="id"/>
+        <result column="last_name" property="lastName"/>
+        <result column="gender" property="gender"/>
+        <result column="email" property="email"/>
+        <association property="dept" select="com.dong.mapper.DepartmentMapper.getDeptById"
+            column="dept_id">
+        </association>
+    </resultMap>
+    <select id="getEmployeeByIdWithDeptStep" resultMap="employeeMap3">
+        select * from tbl_employee where id=#{id}
+    </select>
+
+
+    <select id="getEmpByDeptId" resultType="com.dong.model.Employee">
+        select * from tbl_employee where dept_id=#{deptId}
+    </select>
+
+
+
+    <resultMap id="employeeMapDis" type="com.dong.model.Employee">
+        <id column="id" property="id"/>
+        <result column="last_name" property="lastName"/>
+        <result column="gender" property="gender"/>
+        <result column="email" property="email"/>
+        <discriminator javaType="string" column="gender">
+            <case value="0" resultType="com.dong.model.Employee">
+                <association property="dept" select="com.dong.mapper.DepartmentMapper.getDeptById"
+                             column="dept_id">
+                </association>
+            </case>
+            <case value="1" >
+                <id column="id" property="id"/>
+                <result column="last_name" property="lastName"/>
+                <result column="gender" property="gender"/>
+                <result column="last_name" property="email"/>
+            </case>
+        </discriminator>
+    </resultMap>
+
+
+    <select id="searchEmpByCondition" resultType="com.dong.model.Employee">
+        select * from tbl_employee
+        <where>
+            <if test="id!=null">
+                id=#{id}
+            </if>
+            <if test="lastName!=null and lastName!=''">
+                and last_name like #{lastName}
+            </if>
+            <if test="email!=null and email!=''">
+                and email = #{email}
+            </if>
+            <if test="gender==0 or gender==1">
+                and gender = #{gender}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="searchEmpByConditionTrim" resultType="com.dong.model.Employee">
+        select * from tbl_employee
+        <trim prefix="where" suffixOverrides="and">
+            <if test="id!=null">
+                id=#{id} and
+            </if>
+            <if test="lastName!=null and lastName!=''">
+                last_name like #{lastName} and
+            </if>
+            <if test="email!=null and email!=''">
+                email = #{email} and
+            </if>
+            <if test="gender==0 or gender==1">
+                gender = #{gender}
+            </if>
+        </trim>
+    </select>
+
+    <select id="searchEmpByConditionChoose" resultType="com.dong.model.Employee">
+        select * from tbl_employee
+        <where>
+            <choose>
+                <when test="id!=null">
+                    id=#{id}
+                </when>
+                <when test="lastName!=null and lastName!=''">
+                    last_name like #{lastName}
+                </when>
+                <when test="email!=null and email!=''">
+                    email = #{email}
+                </when>
+                <otherwise>
+                    1=1
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+
+    <update id="updateEmpByCondition">
+        update tbl_employee
+        <set>
+            <if test="lastName!=null and lastName!=''">
+                last_name=#{lastName},
+            </if>
+            <if test="email!=null and email!=''">
+                email=#{email},
+            </if>
+            <if test="gender!=null">
+                gender=#{gender}
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+    
+    <select id="searchEmpByConditionForeach" resultType="com.dong.model.Employee">
+        select * from tbl_employee
+        <if test="ids!=null and ids.size() != 0">
+            where id in(
+            <foreach collection="ids" item="item_id" separator=",">
+                #{item_id}
+            </foreach>
+            )
+        </if>
+    </select>
+    
+    <insert id="batchAddEmps">
+        insert into tbl_employee (last_name,email,gender,dept_id) values
+        <foreach collection="emps" item="emp" separator=",">
+            (#{emp.lastName},#{emp.email},#{emp.gender},#{emp.dept.id})
+        </foreach>
+    </insert>
+</mapper>

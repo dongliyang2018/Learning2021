@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <!--开启数据库字段下划线转实体属性驼峰命名-->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+
+        <!--懒加载-->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <setting name="aggressiveLazyLoading" value="false"/>
+    </settings>
+    <typeAliases>
+        <!--批量起别名-->
+        <package name="com.dong.model"/>
+    </typeAliases>
+    <!-- 7、环境：配置mybatis的环境 -->
+    <environments default="development">
+        <!-- 环境变量：支持多套环境变量，例如开发环境、生产环境 -->
+        <environment id="development">
+            <!-- 事务管理器：默认JDBC -->
+            <transactionManager type="JDBC" />
+            <!-- 数据源：使用连接池，并加载mysql驱动连接数据库 -->
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.cj.jdbc.Driver" />
+                <property name="url" value="jdbc:mysql://localhost:3306/mybatis" />
+                <property name="username" value="dongliyang" />
+                <property name="password" value="dong$@@$51" />
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <!-- 单个注册 -->
+<!--        <mapper resource="com/dong/mapper/EmployeeMapper.xml"/>-->
+        <!-- 批量注册。编译后，类文件和xml文件必须在一起，才能用这种方式 -->
+        <package name="com.dong.mapper"/>
+    </mappers>
+</configuration>
