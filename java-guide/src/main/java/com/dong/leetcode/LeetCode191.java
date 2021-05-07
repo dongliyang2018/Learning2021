@@ -1,4 +1,4 @@
-package com.dong;
+package com.dong.leetcode;
 
 /**
  * 位1的个数

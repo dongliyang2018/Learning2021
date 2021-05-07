@@ -1,4 +1,4 @@
-package com.dong;
+package com.dong.leetcode;
 
 import java.util.LinkedList;
 import java.util.Queue;

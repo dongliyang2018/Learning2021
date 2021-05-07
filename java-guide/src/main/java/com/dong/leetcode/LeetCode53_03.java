@@ -1,4 +1,4 @@
-package com.dong;
+package com.dong.leetcode;
 
 public class LeetCode53_03 {
 

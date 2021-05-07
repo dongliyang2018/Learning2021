@@ -1,7 +1,5 @@
-package com.dong;
+package com.dong.leetcode;
 
-
-import sun.reflect.generics.tree.Tree;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

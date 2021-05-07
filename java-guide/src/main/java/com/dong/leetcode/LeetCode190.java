@@ -1,4 +1,4 @@
-package com.dong;
+package com.dong.leetcode;
 
 /**
  * 颠倒二进制位
