@@ -2,6 +2,9 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dong.mapper.EmployeeMapper">
+
+    <cache></cache>
+
     <select id="getEmployeeById" resultType="Employee">
         select * from tbl_employee where id=#{id}
     </select>

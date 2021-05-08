@@ -9,6 +9,9 @@
         <!--懒加载-->
         <setting name="lazyLoadingEnabled" value="true"/>
         <setting name="aggressiveLazyLoading" value="false"/>
+
+        <!-- 开启二级缓存，默认也是true的。这个地方显示配置一下 -->
+        <setting name="cacheEnabled" value="true"/>
     </settings>
     <typeAliases>
         <!--批量起别名-->

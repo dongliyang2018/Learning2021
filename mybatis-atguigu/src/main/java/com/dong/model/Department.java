@@ -1,5 +1,6 @@
 package com.dong.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -7,7 +8,7 @@ import java.util.List;
  * @version 1.0 2021/5/5
  * @author dongliyang
  */
-public class Department {
+public class Department implements Serializable {
 
     private Integer id;
     private String departmentName;

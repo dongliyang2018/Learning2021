@@ -1,11 +1,13 @@
 package com.dong.model;
 
+import java.io.Serializable;
+
 /**
  * 员工
  * @version 1.0 2021/5/4
  * @author dongliyang
  */
-public class Employee {
+public class Employee implements Serializable {
 
     private Integer id;
     private String lastName;
